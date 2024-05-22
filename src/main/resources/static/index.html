@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>File Upload</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" class="inputfile" onchange="updateFileName()" />
+        <label for="file" id="file-label">Choose a file</label>
+        <button type="submit">Upload</button>
+    </form>
+    <br/>
+    <div class="container">
+        <h1>File List</h1>
+        <select id="file-dropdown">
+            <option value="">Select a file</option>
+            <!-- File options will be dynamically added here -->
+        </select>
+        <button onclick="downloadFile()">Download</button>
+        <button onclick="readSelectedFile()">Read Selected File</button>
+    </div>
+</div>
+
+<script>
+    function updateFileName() {
+        var fileInput = document.getElementById('file');
+        var fileName = fileInput.files[0].name;
+        var fileLabel = document.getElementById('file-label');
+        fileLabel.textContent = fileName;
+    }
+
+    function populateDropdown(files) {
+        var dropdown = document.getElementById('file-dropdown');
+        dropdown.innerHTML = '<option value="">Select a file</option>'; // Clear previous options
+        files.forEach(function(file) {
+            var option = document.createElement('option');
+            option.text = file;
+            option.value = file;
+            dropdown.appendChild(option);
+        });
+    }
+
+    // Function to trigger file download
+    function downloadFile() {
+        var selectedFile = document.getElementById('file-dropdown').value;
+        if (selectedFile) {
+            window.location.href = '/download/' + encodeURIComponent(selectedFile); // Encode the filename
+        } else {
+            alert('Please select a file to download.');
+        }
+    }
+
+    // Fetch files from the server and populate the dropdown when the page loads
+    window.onload = function() {
+        fetch('/getFiles')
+            .then(response => response.json())
+            .then(files => populateDropdown(files))
+            .catch(error => console.error('Error fetching files:', error));
+    };
+
+    function readSelectedFile() {
+        var selectedFile = document.getElementById('file-dropdown').value;
+        if (selectedFile) {
+            // Send AJAX request to the controller endpoint
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/readFile?filename=' + encodeURIComponent(selectedFile), true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Display the content of the file received from the server
+                        alert("Content of " + selectedFile + ":\n\n" + xhr.responseText);
+                    } else {
+                        alert('Error reading file: ' + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send();
+        } else {
+            alert('Please select a file to read.');
+        }
+    }
+</script>
+</body>
+</html>

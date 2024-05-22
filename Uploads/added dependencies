@@ -1,0 +1,15 @@
+ class -> SpellingSearchAdapter, Jar -> suggester-client_thrift_0.9   , method signature changed -> suggestionList =
+				TrafficThriftSuggesterClient.INSTANCE.client().getSpellCorrections(keyword, maxResults, channelId);
+class -> KNLSearchAdapter, Jar -> knl-client_thrift_0.9  , method signature changed -> knlService.getKNLResultForKeywords(keywordSet, channelId, Collections.<Long> emptySet(),
+								Collections.<Long> emptySet(), minRank, minRankShare, isClicks);
+								
+								
+								
+								
+								
+								
+								
+knl-client_thrift_0.9  -> 
+
+
+traffic-release_20240318_4273_240318.5
